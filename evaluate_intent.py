@@ -15,7 +15,7 @@ from transformers import AutoTokenizer, AutoModelWithLMHead, pipeline, set_seed,
 
 from data import Dataset
 from model import Model
-from util import save_checkpoint, ProgressMeter, AverageMeter, num_params
+from util import save_checkpoint, num_params
 from constants import *
 from predict_intent import predict_intent
 

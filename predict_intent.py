@@ -14,7 +14,7 @@ from transformers import AutoTokenizer, AutoModelWithLMHead, pipeline, set_seed,
 from torch import Tensor
 from data import Dataset
 from model import Model
-from util import save_checkpoint, ProgressMeter, AverageMeter, num_params
+from util import save_checkpoint, num_params
 from constants import *
 
 def main(args):
@@ -233,6 +233,8 @@ def _generate_no_beam_search(
                 condition_logits = condition_logits.view(batch_size, precondition_topk, -1)[:, :, -1] # batch x topk of last formality pred
                 condition_logits = condition_logits - torch.log(1 + torch.exp(condition_logits)) # get correct log probs
                 # condition_logits = - torch.log(1 + torch.exp(condition_logits)) # for informal
+                print(input_label)
+                print(condition_logits.size())
                 condition_logits = condition_logits[:, :, input_label]
             full_logits = top_logits + condition_lambda * condition_logits
             if do_sample:
