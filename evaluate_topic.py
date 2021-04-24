@@ -48,11 +48,12 @@ def main(args):
         with open(args.condition_file, 'r') as rf:
             for line in rf:
                 input_texts.append(line.strip().split('\t')[0])
-                conditions.append(line.strip().split('\t')[1])
-                categories.append(None)
-                for i, cw in enumerate(conditions[-1].split()):
+                cond_words = line.strip().split('\t')[1].split()
+                for i, cw in enumerate(cond_words):
                     if cw not in dataset_info.word2index:
-                        conditions[-1][i] = gpt_tokenizer.unk_token
+                        cond_words[i] = gpt_tokenizer.unk_token
+                conditions.append(' '.join(cond_words))
+                categories.append(None)
     else:
         prefixes = []
         with open(args.prefix_file, 'r') as rf:
