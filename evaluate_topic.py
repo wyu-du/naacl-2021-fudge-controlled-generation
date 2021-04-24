@@ -49,10 +49,11 @@ def main(args):
             for line in rf:
                 input_texts.append(line.strip().split('\t')[0])
                 cond_words = line.strip().split('\t')[1].split()
+                cond_list = []
                 for i, cw in enumerate(cond_words):
-                    if cw not in dataset_info.word2index:
-                        cond_words[i] = gpt_tokenizer.unk_token
-                conditions.append(' '.join(cond_words))
+                    if cw in dataset_info.word2index:
+                        cond_list.append(cw)
+                conditions.append(' '.join(cond_list))
                 categories.append(None)
     else:
         prefixes = []
