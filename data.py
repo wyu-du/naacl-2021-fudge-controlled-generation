@@ -326,6 +326,7 @@ class SplitLoader(torch.utils.data.IterableDataset):
                     future_word = future_word.strip().strip(string.punctuation) # NOTE: we didn't strip punctuation for the topic bag of words paper experiments for our method. it doesn't make much difference, though.
                     word_log_prob, future_word = 0, 0
                     pad_id = self.parent.gpt_pad_id
+                    classification_label = torch.nn.functional.one_hot(classification_label, num_classes=4)
                     example = (inp, length, future_word, word_log_prob, pad_id, classification_label, syllables_to_go, future_word_num_syllables, rhyme_group_index)
                     valid = True
             elif self.parent.iambic:
