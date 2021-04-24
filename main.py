@@ -40,6 +40,11 @@ def train(model, dataset, optimizer, criterion, epoch, args, data_start_index):
             expanded_labels = classification_targets.unsqueeze(1).expand(-1, scores.shape[1]) # batch x seq
             length_mask = pad_mask(lengths).permute(1, 0) # batch x seq
             loss = criterion(scores.flatten()[length_mask.flatten()==1], expanded_labels.flatten().float()[length_mask.flatten()==1])
+        elif args.task == 'intent': # we're learning for all positions at once. scores are batch x seq x 4
+            expanded_labels = classification_targets.unsqueeze(1).expand(-1, scores.shape[1], -1) # batch x seq x 4
+            expanded_labels = expanded_labels.contiguous().view(-1, 4) # batch*seq x 4
+            scores = scores.contiguous().view(-1, 4)
+            loss = criterion(scores, expanded_labels)
         elif args.task in ['iambic', 'newline']:
             use_indices = classification_targets.flatten() != -1
             loss = criterion(scores.flatten()[use_indices], classification_targets.flatten().float()[use_indices])
@@ -74,6 +79,11 @@ def validate(model, dataset, criterion, epoch, args):
                 expanded_labels = classification_targets.unsqueeze(1).expand(-1, scores.shape[1]) # batch x seq
                 length_mask = pad_mask(lengths).permute(1, 0) # batch x seq
                 loss = criterion(scores.flatten()[length_mask.flatten()==1], expanded_labels.flatten().float()[length_mask.flatten()==1])
+            elif args.task == 'intent': # we're learning for all positions at once. scores are batch x seq x 4
+                expanded_labels = classification_targets.unsqueeze(1).expand(-1, scores.shape[1], -1) # batch x seq x 4
+                expanded_labels = expanded_labels.contiguous().view(-1, 4) # batch*seq x 4
+                scores = scores.contiguous().view(-1, 4)
+                loss = criterion(scores, expanded_labels)
             elif args.task in ['iambic', 'newline']:
                 use_indices = classification_targets.flatten() != -1
                 loss = criterion(scores.flatten()[use_indices], classification_targets.flatten().float()[use_indices])
@@ -156,7 +166,7 @@ if __name__=='__main__':
     parser = ArgumentParser()
 
     # DATA
-    parser.add_argument('--task', type=str, required=True, choices=['iambic', 'rhyme', 'newline', 'topic', 'formality'])
+    parser.add_argument('--task', type=str, required=True, choices=['iambic', 'rhyme', 'newline', 'topic', 'formality', 'intent'])
     parser.add_argument('--data_dir', type=str, required=True)
     parser.add_argument('--glove_file', type=str, help='glove embedding init, for topic task')
 

@@ -84,6 +84,7 @@ class Dataset:
         self.data_dir = args.data_dir
         self.topic = args.task == 'topic'
         self.formality = args.task == 'formality'
+        self.intent = args.task == 'intent'
         self.iambic = args.task == 'iambic'
         self.rhyme = args.task == 'rhyme'
         self.newline = args.task == 'newline'
@@ -110,6 +111,28 @@ class Dataset:
                         if len(line) > FORMALITY_MAX_LEN:
                             line = ' '.join(line.strip()[:FORMALITY_MAX_LEN].split()[:-1]) # cutoff words until below max len
                         test.append((line.strip(), label))
+            self.splits = {}
+            self.splits['train'], self.splits['val'], self.splits['test'] = train, val, test
+        elif self.intent:
+            self.vocab['placeholder'] = 1 # anything so we don't crash
+            labels = ["inform", "question", "directive", "commissive"]
+            train, val, test = [], [], []
+            with open(os.path.join(args.data_dir, 'dailydialog_gen_train.txt'), 'r') as f:
+                lines = f.read().strip().split('\n')
+                for i, line in enumerate(lines):
+                    items = line.split('\t')
+                    train.append((items[1].strip(), labels.index(items[0].strip())))
+            with open(os.path.join(args.data_dir, 'dailydialog_gen_dev.txt'), 'r') as f:
+                lines = f.read().strip().split('\n')
+                for i, line in enumerate(lines):
+                    items = line.split('\t')
+                    val.append((items[1].strip(), labels.index(items[0].strip())))
+            with open(os.path.join(args.data_dir, 'dailydialog_gen_test.txt'), 'r') as f:
+                lines = f.read().strip().split('\n')
+                for i, line in enumerate(lines):
+                    items = line.split('\t')
+                    test.append((items[1].strip(), labels.index(items[0].strip())))
+            
             self.splits = {}
             self.splits['train'], self.splits['val'], self.splits['test'] = train, val, test
         else: # topic / poetry
@@ -262,6 +285,28 @@ class SplitLoader(torch.utils.data.IterableDataset):
                             example = (inp, length, future_word, word_log_prob, pad_id, classification_label, syllables_to_go, future_word_num_syllables, rhyme_group_index)
                             valid = not failed
             elif self.parent.formality:
+                future_word_num_syllables, rhyme_group_index, syllables_to_go = -1, -1, -1
+                raw_sentence, classification_label = self.data[self.pos]
+                original_sentence = raw_sentence.split()
+                sentence = self.parent.tokenizer.encode(raw_sentence, return_tensors='pt')[0]
+                length = len(sentence)
+                min_sentence_length = MIN_SENTENCE_LENGTH
+                if len(sentence) > min_sentence_length: # set to 3. well, everything in data is > 3 for the bag of words task
+                    pos_to_split = length # no need to split since we already have the label
+                    inp = sentence[:pos_to_split]
+                    length = len(inp)
+                    num_words_in_input = len(self.parent.tokenizer.decode(inp).split())
+                    # only look up to 10 words ahead if we're doing count syllables, since we'll filter out anything more than 10 syllables ahead anyway
+                    future_word_position_max = len(original_sentence) - 1
+                    future_word_position = 0
+                    future_word = 'placeholder'
+                    unstripped_future_word = future_word
+                    future_word = future_word.strip().strip(string.punctuation) # NOTE: we didn't strip punctuation for the topic bag of words paper experiments for our method. it doesn't make much difference, though.
+                    word_log_prob, future_word = 0, 0
+                    pad_id = self.parent.gpt_pad_id
+                    example = (inp, length, future_word, word_log_prob, pad_id, classification_label, syllables_to_go, future_word_num_syllables, rhyme_group_index)
+                    valid = True
+            elif self.parent.intent:
                 future_word_num_syllables, rhyme_group_index, syllables_to_go = -1, -1, -1
                 raw_sentence, classification_label = self.data[self.pos]
                 original_sentence = raw_sentence.split()
