@@ -6,7 +6,6 @@ CUDA_VISIBLE_DEVICES=$device_id python -u evaluate_topic.py \
 --dataset_info ckpt/convai2/future_word_retrain_predictor/dataset_info \
 --condition_file convai2_data/convai2_gen_dev.txt \
 --condition_lambda 4.0 \
---verbose \
 --precondition_topk 200 \
 --topk 10 \
 --sample_size 3 \
