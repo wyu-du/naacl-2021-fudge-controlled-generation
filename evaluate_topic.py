@@ -107,7 +107,7 @@ def main(args):
                 break
         
             for cr in condition_results:
-                writer.writerow({'category': category, 'input_text': input_text, 'generation': cr})
+                writer.writerow({'generation': cr})
 
 
 if __name__=='__main__':

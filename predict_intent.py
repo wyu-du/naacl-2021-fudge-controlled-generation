@@ -189,6 +189,7 @@ def _generate_no_beam_search(
         # length of generated sentences / unfinished sentences
         unfinished_sents = input_ids.new(batch_size).fill_(1)
         sent_lengths = input_ids.new(batch_size).fill_(max_length)
+        ori_inp_len = input_ids.size(1)
 
         past = None
         while cur_len < max_length:
@@ -283,7 +284,7 @@ def _generate_no_beam_search(
                     [attention_mask, attention_mask.new_ones((attention_mask.shape[0], 1))], dim=-1
                 )
 
-        return input_ids
+        return input_ids[:, ori_inp_len:]
 
 if __name__=='__main__':
     parser = ArgumentParser()

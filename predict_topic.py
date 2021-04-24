@@ -65,6 +65,7 @@ def predict(gpt_model, gpt_tokenizer, conditioning_model, input_text, condition_
         encoded_input = [gpt_tokenizer.encode(it, return_tensors='pt').to(device) for it in input_text] # batch x seq
         encoded_input = torch.cat(encoded_input, dim=0)
         lengths = torch.LongTensor([encoded_input.shape[1]]).to(device)
+        ori_inp_len = encoded_input.shape[1]
 
         gpt_encoded_future_words = [gpt_tokenizer.encode(' ' + cw, return_tensors='pt')[0].to(device) for cw in condition_words]
         while lengths.max() < length_cutoff:
@@ -94,7 +95,7 @@ def predict(gpt_model, gpt_tokenizer, conditioning_model, input_text, condition_
             next_indices = top_indices[torch.arange(batch_size).to(top_indices.device), index_into_top_indices] # batch
             encoded_input = torch.cat([encoded_input, next_indices.unsqueeze(1)], dim=1) # batch x seq+1
             lengths = lengths + 1 # batch
-        return [gpt_tokenizer.decode(s) for s in encoded_input]
+        return [gpt_tokenizer.decode(s) for s in encoded_input[:, ori_inp_len:]]
         
 
 if __name__=='__main__':
