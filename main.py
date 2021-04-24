@@ -83,7 +83,7 @@ def validate(model, dataset, criterion, epoch, args):
                 expanded_labels = classification_targets.unsqueeze(1).expand(-1, scores.shape[1], -1) # batch x seq x 4
                 expanded_labels = expanded_labels.contiguous().view(-1, 4) # batch*seq x 4
                 scores = scores.contiguous().view(-1, 4)
-                loss = criterion(scores, expanded_labels)
+                loss = criterion(scores, expanded_labels.float())
             elif args.task in ['iambic', 'newline']:
                 use_indices = classification_targets.flatten() != -1
                 loss = criterion(scores.flatten()[use_indices], classification_targets.flatten().float()[use_indices])
