@@ -44,8 +44,10 @@ def collate(batch):
                 classification_labels[i] = torch.LongTensor(classification_labels[i])
         classification_labels = torch.stack(classification_labels, dim=0) # batch x seq
     else:
-        assert type(classification_labels[0]) == int
-        classification_labels = torch.LongTensor(classification_labels) # they're just int labels
+        if type(classification_labels[0]) == int:
+            classification_labels = torch.LongTensor(classification_labels) # they're just int labels
+        else:
+            classification_labels = torch.stack(classification_labels, dim=0) # batch x seq x 4
     syllables_to_go = torch.LongTensor([b[6] for b in batch])
     future_word_num_syllables = torch.LongTensor([b[7] for b in batch])
     rhyme_group_index = torch.LongTensor([b[8] for b in batch])
