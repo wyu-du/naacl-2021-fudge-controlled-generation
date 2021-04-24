@@ -13,7 +13,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelWithLMHead, pipeline, set_seed, GPT2Tokenizer, GPT2Model, GPT2LMHeadModel
 
-from data import Dataset
 from model import Model
 from util import save_checkpoint, num_params
 from constants import *

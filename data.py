@@ -12,7 +12,6 @@ import numpy as np
 from tqdm import tqdm
 import torch
 
-from util import suppress_stdout
 from poetry_util import is_iambic, count_syllables, get_rhymes, get_rhyme_group
 from constants import *
 
