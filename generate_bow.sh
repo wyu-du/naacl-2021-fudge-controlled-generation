@@ -1,9 +1,9 @@
 
-export device_id=5
+export device_id=4
 
 CUDA_VISIBLE_DEVICES=$device_id python -u evaluate_topic.py \
---ckpt ckpt/convai2/future_word_predictor/model.pth.tar \
---dataset_info ckpt/convai2/future_word_predictor/dataset_info \
+--ckpt ckpt/convai2/future_word_retrain_predictor/model.pth.tar \
+--dataset_info ckpt/convai2/future_word_retrain_predictor/dataset_info \
 --condition_file convai2_data/convai2_gen_dev.txt \
 --condition_lambda 4.0 \
 --verbose \
