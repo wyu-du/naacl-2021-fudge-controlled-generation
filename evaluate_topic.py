@@ -50,8 +50,9 @@ def main(args):
                 input_texts.append(line.strip().split('\t')[0])
                 conditions.append(line.strip().split('\t')[1])
                 categories.append(None)
-                for cw in conditions[-1].split():
-                    assert cw in dataset_info.word2index
+                for i, cw in enumerate(conditions[-1].split()):
+                    if cw not in dataset_info.word2index:
+                        conditions[-1][i] = gpt_tokenizer.unk_token
     else:
         prefixes = []
         with open(args.prefix_file, 'r') as rf:
@@ -113,7 +114,7 @@ if __name__=='__main__':
     parser.add_argument('--ckpt', type=str, required=True)
     parser.add_argument('--log_file', type=str, required=True, help='file to write outputs to (csv format)')
     parser.add_argument('--dataset_info', type=str, required=True, help='saved dataset info')
-    parser.add_argument('--model_string', type=str, default='gpt2-medium')
+    parser.add_argument('--model_string', type=str, default='microsoft/DialoGPT-medium')
 
     parser.add_argument('--condition_file', type=str, default=None, help='file of inputs and conditions')
     parser.add_argument('--prefix_file', type=str, default=None, help='prefix set')

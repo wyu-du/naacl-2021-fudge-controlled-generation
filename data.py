@@ -137,6 +137,24 @@ class Dataset:
             
             self.splits = {}
             self.splits['train'], self.splits['val'], self.splits['test'] = train, val, test
+        elif self.topic:
+            train, val, test = [], [], []
+            with open(os.path.join(args.data_dir, 'convai2_profile_train.txt'), 'r') as rf:
+                for line in rf:
+                    train.append(line.strip())
+                    for word in line.strip().split(' '):
+                        self.vocab[word] += 1
+            train_num = int(len(train)*0.8)
+            train = train[:train_num]
+            val = train[train_num:]
+            with open(os.path.join(args.data_dir, 'convai2_profile_dev.txt'), 'r') as rf:
+                for line in rf:
+                    test.append(line.strip())
+                    for word in line.strip().split(' '):
+                        self.vocab[word] += 1            
+            
+            self.splits = {}
+            self.splits['train'], self.splits['val'], self.splits['test'] = train, val, test
         else: # topic / poetry
             for root, _, filenames in os.walk(args.data_dir):
                 for fname in filenames:
