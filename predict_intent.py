@@ -41,6 +41,7 @@ def main(args):
                         tokenizer, 
                         conditioning_model, 
                         [args.input_text], 
+                        [args.input_label],
                         dataset_info, 
                         precondition_topk=args.precondition_topk,
                         do_sample=args.do_sample,
@@ -51,7 +52,9 @@ def main(args):
         import pdb; pdb.set_trace()
 
 
-def predict_intent(model, tokenizer, conditioning_model, input_text, dataset_info, precondition_topk=200, do_sample=False, length_cutoff=512, condition_lambda=1.0, device='cuda'):
+def predict_intent(model, tokenizer, conditioning_model, input_text, input_label,
+                   dataset_info, precondition_topk=200, do_sample=False, 
+                   length_cutoff=512, condition_lambda=1.0, device='cuda'):
     with torch.no_grad():
         batch_size = len(input_text)
 
@@ -81,6 +84,7 @@ def predict_intent(model, tokenizer, conditioning_model, input_text, dataset_inf
                                         condition_lambda,
                                         precondition_topk,
                                         input_ids,
+                                        input_label,
                                         cur_len,
                                         max_length,
                                         min_length,
@@ -109,6 +113,7 @@ def _generate_no_beam_search(
         condition_lambda,
         precondition_topk,
         input_ids,
+        input_label,
         cur_len,
         max_length,
         min_length,
@@ -176,6 +181,7 @@ def _generate_no_beam_search(
                 condition_logits = condition_logits.view(batch_size, precondition_topk, -1)[:, :, -1] # batch x topk of last formality pred
                 condition_logits = condition_logits - torch.log(1 + torch.exp(condition_logits)) # get correct log probs
                 # condition_logits = - torch.log(1 + torch.exp(condition_logits)) # for informal
+                condition_logits = condition_logits[:, :, input_label]
             full_logits = top_logits + condition_lambda * condition_logits
             if do_sample:
                 raise NotImplementedError

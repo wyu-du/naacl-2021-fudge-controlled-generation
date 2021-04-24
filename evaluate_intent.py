@@ -55,17 +55,20 @@ def main(args):
                 .format(args.ckpt, checkpoint['epoch']))
         print('num params', num_params(conditioning_model))
 
-    inputs = []
+    inputs, labels = [], []
+    intents = ["inform", "question", "directive", "commissive"]
     with open(args.in_file, 'r') as rf:
         for line in rf:
             items = line.split('\t')
+            labels.append(intents.index(items[0].strip()))
             inputs.append(items[1].strip())
     
-    for inp in tqdm(inputs, total=len(inputs)):
+    for inp, inp_label in zip(inputs, labels):
         results = predict_intent(model, 
                         tokenizer, 
                         conditioning_model, 
                         [inp], 
+                        inp_label,
                         dataset_info, 
                         precondition_topk=args.precondition_topk,
                         do_sample=args.do_sample,
