@@ -77,7 +77,7 @@ def predict_intent(model, tokenizer, conditioning_model, input_text, input_label
         effective_batch_size = batch_size
         attention_mask = encoded_input.new_ones(encoded_input.shape)
         use_cache = True
-        model_specific_kwargs = {'encoder_outputs': model.get_encoder()(encoded_input, attention_mask=attention_mask)}
+#        model_specific_kwargs = {'encoder_outputs': model.get_encoder()(encoded_input, attention_mask=attention_mask)}
 
         output = _generate_no_beam_search(model,
                                         conditioning_model,
@@ -100,7 +100,8 @@ def predict_intent(model, tokenizer, conditioning_model, input_text, input_label
                                         batch_size,
                                         attention_mask,
                                         use_cache,
-                                        model_specific_kwargs)
+#                                        model_specific_kwargs
+                                        )
 
         return [tokenizer.decode(s[1:]) for s in output] # 1: to delete the pad token
 
