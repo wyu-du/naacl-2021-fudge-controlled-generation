@@ -123,17 +123,17 @@ class Dataset:
                 lines = f.read().strip().split('\n')
                 for i, line in enumerate(lines):
                     items = line.split('\t')
-                    train.append((items[1].strip(), labels.index(items[0].strip())))
+                    train.append((items[1].strip() + ' ' + items[2].strip(), labels.index(items[0].strip())))
             with open(os.path.join(args.data_dir, 'dailydialog_gen_dev.txt'), 'r') as f:
                 lines = f.read().strip().split('\n')
                 for i, line in enumerate(lines):
                     items = line.split('\t')
-                    val.append((items[1].strip(), labels.index(items[0].strip())))
+                    val.append((items[1].strip() + ' ' + items[2].strip(), labels.index(items[0].strip())))
             with open(os.path.join(args.data_dir, 'dailydialog_gen_test.txt'), 'r') as f:
                 lines = f.read().strip().split('\n')
                 for i, line in enumerate(lines):
                     items = line.split('\t')
-                    test.append((items[1].strip(), labels.index(items[0].strip())))
+                    test.append((items[1].strip() + ' ' + items[2].strip(), labels.index(items[0].strip())))
             
             self.splits = {}
             self.splits['train'], self.splits['val'], self.splits['test'] = train, val, test
