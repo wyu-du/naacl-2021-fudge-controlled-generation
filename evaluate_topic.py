@@ -79,35 +79,33 @@ def main(args):
                 conditions.append(c)
                 categories.append(category)
     
-    with open(args.log_file, 'w') as wf:
-        writer = csv.DictWriter(wf, fieldnames=['category', 'input_text', 'generation'])
-        writer.writeheader()
+#    with open(args.log_file, 'w') as wf:
+#        writer = csv.DictWriter(wf, fieldnames=['category', 'input_text', 'generation'])
+#        writer.writeheader()
         
 #        all_cr = []
-        pair_num = 0
-        for input_text, condition_words, category in tqdm(zip(input_texts, conditions, categories), total=len(conditions)):
-            predict_function = predict
-            condition_results = []
-            for i in range(0, args.sample_size, args.max_sample_batch):
-                num_samples = min(args.max_sample_batch, args.sample_size - i)
-                condition_results += predict_function(gpt_model, 
-                                gpt_tokenizer, 
-                                conditioning_model, 
-                                [input_text for _ in range(num_samples)],
-                                condition_words,
-                                dataset_info, 
-                                args.precondition_topk,
-                                args.topk, 
-                                args.length_cutoff,
-                                condition_lambda=args.condition_lambda,
-                                device=args.device)
+    pair_num = 0
+    for input_text, condition_words, category in tqdm(zip(input_texts, conditions, categories), total=len(conditions)):
+        predict_function = predict
+        condition_results = predict_function(gpt_model, 
+                        gpt_tokenizer, 
+                        conditioning_model, 
+                        [input_text],
+                        condition_words,
+                        dataset_info, 
+                        args.precondition_topk,
+                        args.topk, 
+                        args.length_cutoff,
+                        condition_lambda=args.condition_lambda,
+                        device=args.device)
+        print(condition_results[0])
 #            all_cr.append((input_text, category, condition_results))
-            pair_num += 1
-            if args.max_pairs > 0 and pair_num >= args.max_pairs:
-                break
+#            pair_num += 1
+#            if args.max_pairs > 0 and pair_num >= args.max_pairs:
+#                break
         
-            for cr in condition_results:
-                writer.writerow({'generation': cr})
+#            for cr in condition_results:
+#                writer.writerow({'generation': cr})
 
 
 if __name__=='__main__':
