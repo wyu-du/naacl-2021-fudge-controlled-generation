@@ -46,7 +46,10 @@ def main(args):
 
     if args.condition_file is not None:
         with open(args.condition_file, 'r') as rf:
-            for line in rf:
+            lines = rf.read().strip().split('\n')
+            lines = lines[int(0.8*len(lines)):]
+        
+            for line in lines:
                 input_texts.append(line.strip().split('\t')[0])
                 cond_words = line.strip().split('\t')[1].split()
                 cond_list = []
