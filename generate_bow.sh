@@ -1,8 +1,8 @@
 
-export device_id=4
+export device_id=3
 
 CUDA_VISIBLE_DEVICES=$device_id python -u evaluate_topic.py \
---model_string ~/baseline-dialogue/src/microsoft/DialoGPT-medium_convai2_raw_base_2021-04-26-10-21-06/checkpoint-47839 \
+--model_string microsoft/DialoGPT-medium \
 --ckpt ckpt/convai2/future_word_retrain_predictor/model_best.pth.tar \
 --dataset_info ckpt/convai2/future_word_retrain_predictor/dataset_info \
 --condition_file convai2_data/convai2_gen_dev.txt \
