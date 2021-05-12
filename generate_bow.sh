@@ -12,6 +12,6 @@ CUDA_VISIBLE_DEVICES=$device_id python -u evaluate_topic.py \
 --sample_size 1 \
 --max_sample_batch 1 \
 --length_cutoff 80 \
---log_file convai2_ft_preds.log > convai2_ft_preds.log
+--log_file convai2_dec_time.log > convai2_dec_time.log
 
 

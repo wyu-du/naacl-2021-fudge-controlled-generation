@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 from collections import defaultdict
 import string
 import csv
+from datetime import datetime
 
 from tqdm import tqdm
 import numpy as np
@@ -88,7 +89,14 @@ def main(args):
         
 #        all_cr = []
     pair_num = 0
+    
+    a = datetime.now() 
+    print('Start time:', a)
+    count = 0
     for input_text, condition_words, category in tqdm(zip(input_texts, conditions, categories), total=len(conditions)):
+        count += 1
+        if count > 10: break
+    
         predict_function = predict
         condition_results = predict_function(gpt_model, 
                         gpt_tokenizer, 
@@ -102,6 +110,10 @@ def main(args):
                         condition_lambda=args.condition_lambda,
                         device=args.device)
         print(condition_results[0])
+        
+    b = datetime.now() 
+    dec_time = (b-a).seconds
+    print('Decoding time:', str(dec_time))
 #            all_cr.append((input_text, category, condition_results))
 #            pair_num += 1
 #            if args.max_pairs > 0 and pair_num >= args.max_pairs:

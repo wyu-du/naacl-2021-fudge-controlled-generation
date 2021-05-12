@@ -5,6 +5,7 @@ import pickle
 import math
 from argparse import ArgumentParser
 from collections import namedtuple
+from datetime import datetime
 
 from tqdm import tqdm
 import numpy as np
@@ -62,7 +63,12 @@ def main(args):
             labels.append(intents.index(items[0].strip()))
             inputs.append(items[1].strip())
     
+    a = datetime.now() 
+    print('Start time:', a)
+    count = 0
     for inp, inp_label in zip(inputs, labels):
+        count += 1
+        if count > 10: break
         results = predict_intent(model, 
                         tokenizer, 
                         conditioning_model, 
@@ -75,6 +81,10 @@ def main(args):
                         condition_lambda=args.condition_lambda,
                         device=args.device)
         print(results[0])
+    
+    b = datetime.now() 
+    dec_time = (b-a).seconds
+    print('Decoding time:', str(dec_time))
 
 
 if __name__=='__main__':
