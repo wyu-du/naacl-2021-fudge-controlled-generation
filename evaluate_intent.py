@@ -66,6 +66,7 @@ def main(args):
     a = datetime.now() 
     print('Start time:', a)
     count = 0
+    total_words = 0
     for inp, inp_label in zip(inputs, labels):
         count += 1
         if count > 10: break
@@ -81,10 +82,13 @@ def main(args):
                         condition_lambda=args.condition_lambda,
                         device=args.device)
         print(results[0])
+        total_words += len(results[0].split())
     
     b = datetime.now() 
     dec_time = (b-a).seconds
-    print('Decoding time:', str(dec_time))
+    
+    avg_dec = dec_time/total_words
+    print('Avg decoding time:', str(avg_dec))
 
 
 if __name__=='__main__':

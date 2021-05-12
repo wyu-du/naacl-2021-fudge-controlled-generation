@@ -93,6 +93,7 @@ def main(args):
     a = datetime.now() 
     print('Start time:', a)
     count = 0
+    total_words = 0
     for input_text, condition_words, category in tqdm(zip(input_texts, conditions, categories), total=len(conditions)):
         count += 1
         if count > 10: break
@@ -110,10 +111,13 @@ def main(args):
                         condition_lambda=args.condition_lambda,
                         device=args.device)
         print(condition_results[0])
+        total_words += len(condition_results[0].split())
         
     b = datetime.now() 
     dec_time = (b-a).seconds
-    print('Decoding time:', str(dec_time))
+    
+    avg_dec = dec_time/total_words
+    print('Avg decoding time:', str(avg_dec))
 #            all_cr.append((input_text, category, condition_results))
 #            pair_num += 1
 #            if args.max_pairs > 0 and pair_num >= args.max_pairs:
